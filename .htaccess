@@ -18,7 +18,6 @@ RewriteRule ^admin/dashboard$ admin/dashboard.php [QSA,L]
 RewriteRule ^admin/manage_customers$ admin/manage_customers.php [QSA,L]
 RewriteRule ^admin/view_otp_requests$ admin/view_otp_requests.php [QSA,L]
 RewriteRule ^admin/view_message_templates$ admin/view_message_templates.php [QSA,L]
-RewriteRule ^admin/view_all_customers$ admin/view_all_customers.php [QSA,L]
 
 # Customer pages
 RewriteRule ^customers/$ customers/index.php [QSA,L]
