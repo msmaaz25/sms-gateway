@@ -1,3 +1,4 @@
+Options -Indexes
 RewriteEngine On
 
 # API endpoints - rewrite to PHP files
@@ -6,6 +7,8 @@ RewriteRule ^api/verify_otp$ api/verify_otp.php [QSA,L]
 RewriteRule ^api/get_otp_requests$ api/get_otp_requests.php [QSA,L]
 
 # Admin pages
+RewriteRule ^admin/$ admin/index.php [QSA,L]
+RewriteRule ^admin/login$ admin/login.php [QSA,L]
 RewriteRule ^admin/dashboard$ admin/dashboard.php [QSA,L]
 RewriteRule ^admin/manage_customers$ admin/manage_customers.php [QSA,L]
 RewriteRule ^admin/view_otp_requests$ admin/view_otp_requests.php [QSA,L]
@@ -13,6 +16,7 @@ RewriteRule ^admin/view_message_templates$ admin/view_message_templates.php [QSA
 RewriteRule ^admin/view_all_customers$ admin/view_all_customers.php [QSA,L]
 
 # Customer pages
+RewriteRule ^customers/$ customers/index.php [QSA,L]
 RewriteRule ^customers/dashboard$ customers/dashboard.php [QSA,L]
 RewriteRule ^customers/generate_otp$ customers/generate_otp.php [QSA,L]
 RewriteRule ^customers/view_otp_requests$ customers/view_otp_requests.php [QSA,L]

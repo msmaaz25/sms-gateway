@@ -1,8 +1,23 @@
 <?php
 require_once '../config/config.php';
 require_once '../includes/auth.php';
-Auth::requireLogin();
-Auth::requireAdmin();
+
+// If not logged in, redirect to admin login
+if (!isLoggedIn()) {
+    header("Location: login.php");
+    exit();
+}
+
+// If logged in but not admin, redirect appropriately
+if (!isAdmin()) {
+    if (isCustomer()) {
+        header("Location: ../customers/dashboard.php");
+    } else {
+        header("Location: ../index.php");
+    }
+    exit();
+}
+?>
 
 require_once '../models/User.php';
 require_once '../models/OTP.php';
