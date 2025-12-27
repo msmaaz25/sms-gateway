@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS users (
     user_type ENUM('admin', 'customer') NOT NULL DEFAULT 'customer',
     company_name VARCHAR(100),
     api_key VARCHAR(255) UNIQUE,
+    otp_monthly_quota INT DEFAULT 0,
+    otp_used_current_month INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

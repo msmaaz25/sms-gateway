@@ -266,6 +266,18 @@ try {
                         </a>
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <div class="card function-card bg-danger text-white">
+                        <div class="function-icon text-center">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                        <h4>Manage Quotas</h4>
+                        <p>Set and manage customer OTP quotas</p>
+                        <a href="manage_quotas.php" class="function-btn btn btn-danger">
+                            <i class="fas fa-sliders-h me-1"></i>Manage
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

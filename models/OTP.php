@@ -20,6 +20,17 @@ if (!class_exists('OTP')) {
         // Generate a new OTP with message template
         public function generateOTP($user_id, $phone_number, $purpose = null, $expiry_minutes = 10) {
             try {
+                // Check if user has exceeded their quota
+                require_once __DIR__ . '/User.php';
+                $userModel = new User();
+
+                if ($userModel->hasExceededQuota($user_id)) {
+                    return [
+                        'success' => false,
+                        'message' => 'OTP quota exceeded for this month'
+                    ];
+                }
+
                 // Generate 6-digit OTP
                 $otp_code = str_pad(rand(0, 999999), 6, "0", STR_PAD_LEFT);
 
@@ -42,6 +53,9 @@ if (!class_exists('OTP')) {
                 $result = $stmt->execute([$user_id, $phone_number, $otp_code, $purpose, $expires_at]);
 
                 if($result) {
+                    // Increment user's used quota
+                    $userModel->incrementUserUsedQuota($user_id);
+
                     // Send SMS using the message template
                     $sms_sent = sendSMS($phone_number, $message);
 
