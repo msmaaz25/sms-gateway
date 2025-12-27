@@ -1,7 +1,13 @@
 <?php
 // OTP Model
-require_once '../config/config.php';
-require_once '../includes/utils.php';
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../includes/utils.php';
 
 class OTP {
     private $conn;

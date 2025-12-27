@@ -1,6 +1,11 @@
 Options -Indexes
 RewriteEngine On
 
+# Skip rewriting for actual files and directories
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
 # API endpoints - rewrite to PHP files
 RewriteRule ^api/generate_otp$ api/generate_otp.php [QSA,L]
 RewriteRule ^api/verify_otp$ api/verify_otp.php [QSA,L]
@@ -29,6 +34,4 @@ RewriteRule ^logout$ logout.php [QSA,L]
 RewriteRule ^$ index.php [QSA,L]
 
 # Fallback to index.php for any other routes
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [QSA,L]

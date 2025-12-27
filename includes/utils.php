@@ -1,6 +1,9 @@
 <?php
 // Utility functions
-require_once 'config/config.php';
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../config/config.php';
 
 // Function to send SMS (placeholder - would integrate with actual SMS gateway)
 function sendSMS($phone_number, $message) {

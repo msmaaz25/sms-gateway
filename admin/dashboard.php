@@ -1,6 +1,14 @@
 <?php
-require_once '../config/config.php';
-require_once '../includes/auth.php';
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/db_setup.php';
 
 // If not logged in, redirect to admin login
 if (!isLoggedIn()) {
@@ -19,18 +27,32 @@ if (!isAdmin()) {
 }
 ?>
 
+<?php
 require_once '../models/User.php';
 require_once '../models/OTP.php';
 
 $userModel = new User();
 $otpModel = new OTP();
 
-// Get statistics
-$customers_count = count($userModel->getAllCustomers());
-$all_otp_requests = $otpModel->getAllOTPRequests();
-$today_otp_requests = array_filter($all_otp_requests, function($otp) {
-    return date('Y-m-d', strtotime($otp['created_at'])) === date('Y-m-d');
-});
+// Get statistics with error handling
+try {
+    $customers = $userModel->getAllCustomers();
+    $customers_count = count($customers);
+
+    $all_otp_requests = $otpModel->getAllOTPRequests();
+    $all_otp_requests_count = count($all_otp_requests);
+
+    $today_otp_requests = array_filter($all_otp_requests, function($otp) {
+        return date('Y-m-d', strtotime($otp['created_at'])) === date('Y-m-d');
+    });
+    $today_otp_requests_count = count($today_otp_requests);
+} catch (Exception $e) {
+    // Handle potential database errors
+    $customers_count = 0;
+    $all_otp_requests_count = 0;
+    $today_otp_requests_count = 0;
+    $error_message = "Error loading dashboard data: " . $e->getMessage();
+}
 ?>
 
 <!DOCTYPE html>
@@ -46,7 +68,7 @@ $today_otp_requests = array_filter($all_otp_requests, function($otp) {
         <div class="container-fluid">
             <a class="navbar-brand" href="#">OTP Service Admin</a>
             <div class="navbar-nav ms-auto">
-                <span class="navbar-text me-3">Welcome, <?php echo $_SESSION['username']; ?>!</span>
+                <span class="navbar-text me-3">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
                 <a class="nav-link" href="../logout.php">Logout</a>
             </div>
         </div>
@@ -59,7 +81,11 @@ $today_otp_requests = array_filter($all_otp_requests, function($otp) {
                 <hr>
             </div>
         </div>
-        
+
+        <?php if (isset($error_message)): ?>
+            <div class="alert alert-danger"><?php echo $error_message; ?></div>
+        <?php endif; ?>
+
         <!-- Stats -->
         <div class="row mb-4">
             <div class="col-md-3">
@@ -74,7 +100,7 @@ $today_otp_requests = array_filter($all_otp_requests, function($otp) {
                 <div class="card text-white bg-success">
                     <div class="card-body">
                         <h5 class="card-title">Today's OTPs</h5>
-                        <h2><?php echo count($today_otp_requests); ?></h2>
+                        <h2><?php echo $today_otp_requests_count; ?></h2>
                     </div>
                 </div>
             </div>
@@ -82,12 +108,12 @@ $today_otp_requests = array_filter($all_otp_requests, function($otp) {
                 <div class="card text-white bg-info">
                     <div class="card-body">
                         <h5 class="card-title">Total OTPs</h5>
-                        <h2><?php echo count($all_otp_requests); ?></h2>
+                        <h2><?php echo $all_otp_requests_count; ?></h2>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Navigation -->
         <div class="row">
             <div class="col-md-12">

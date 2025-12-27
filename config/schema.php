@@ -50,8 +50,12 @@ CREATE TABLE IF NOT EXISTS sms_logs (
 ";
 
 // Optional: Create a default admin user
-$default_admin = "
-INSERT IGNORE INTO users (username, email, password, user_type, company_name, api_key) 
-VALUES ('admin', 'admin@otpservice.com', '" . password_hash('admin123', PASSWORD_DEFAULT) . "', 'admin', 'Admin User', '" . bin2hex(random_bytes(32)) . "');
+function createDefaultAdmin() {
+    $hashed_password = password_hash('admin123', PASSWORD_DEFAULT);
+    $api_key = bin2hex(random_bytes(32));
+    return "
+INSERT IGNORE INTO users (username, email, password, user_type, company_name, api_key)
+VALUES ('admin', 'admin@otpservice.com', '$hashed_password', 'admin', 'Admin User', '$api_key');
 ";
+}
 ?>

@@ -1,33 +1,49 @@
 <?php
 // Main Configuration File
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Application settings
-define('APP_NAME', 'OTP Service');
-define('BASE_URL', 'http://localhost/SMS%20Gateway/sms-gateway'); // Adjust based on your setup
+if (!defined('APP_NAME')) {
+    define('APP_NAME', 'OTP Service');
+}
+if (!defined('BASE_URL')) {
+    define('BASE_URL', 'http://localhost/SMS%20Gateway/sms-gateway'); // Adjust based on your setup
+}
 
 // Include database configuration
-require_once 'database.php';
+require_once __DIR__ . '/database.php';
 
-// Utility functions
-function isLoggedIn() {
-    return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+// Utility functions - only define if not already defined
+if (!function_exists('isLoggedIn')) {
+    function isLoggedIn() {
+        return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+    }
 }
 
-function isAdmin() {
-    return isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin';
+if (!function_exists('isAdmin')) {
+    function isAdmin() {
+        return isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin';
+    }
 }
 
-function isCustomer() {
-    return isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'customer';
+if (!function_exists('isCustomer')) {
+    function isCustomer() {
+        return isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'customer';
+    }
 }
 
-function redirect($path) {
-    header("Location: $path");
-    exit();
+if (!function_exists('redirect')) {
+    function redirect($path) {
+        header("Location: $path");
+        exit();
+    }
 }
 
-function sanitizeInput($data) {
-    return htmlspecialchars(strip_tags(trim($data)));
+if (!function_exists('sanitizeInput')) {
+    function sanitizeInput($data) {
+        return htmlspecialchars(strip_tags(trim($data)));
+    }
 }
 ?>

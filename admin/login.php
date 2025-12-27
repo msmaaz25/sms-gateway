@@ -1,7 +1,11 @@
 <?php
 // Admin login page
-require_once '../config/config.php';
-require_once '../includes/auth.php';
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/db_setup.php';
 
 // If already logged in, redirect based on user type
 if (isLoggedIn()) {

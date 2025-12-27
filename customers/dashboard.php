@@ -1,11 +1,29 @@
 <?php
-require_once '../config/config.php';
-require_once '../includes/auth.php';
-Auth::requireLogin();
-Auth::requireCustomer();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/db_setup.php';
 
-require_once '../models/User.php';
-require_once '../models/OTP.php';
+// If not logged in, redirect to main login
+if (!isLoggedIn()) {
+    header("Location: ../index.php");
+    exit();
+}
+
+// If logged in but not customer, redirect appropriately
+if (!isCustomer()) {
+    if (isAdmin()) {
+        header("Location: ../admin/dashboard.php");
+    } else {
+        header("Location: ../index.php");
+    }
+    exit();
+}
+
+require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../models/OTP.php';
 
 $userModel = new User();
 $otpModel = new OTP();
