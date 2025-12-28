@@ -9,7 +9,18 @@ if (!defined('APP_NAME')) {
     define('APP_NAME', 'OTP Service');
 }
 if (!defined('BASE_URL')) {
-    define('BASE_URL', 'http://localhost/SMS%20Gateway/sms-gateway'); // Adjust based on your setup
+    // define('BASE_URL', 'http://localhost/SMS%20Gateway/sms-gateway');
+    // Build dynamic base URL
+   $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+   $host = $_SERVER['HTTP_HOST'];
+   $path = dirname(dirname($_SERVER['SCRIPT_NAME'
+]));
+   $path = rtrim($path, '/');
+   define('BASE_URL', $protocol . '://' . $host . 
+    $path);
+    
+    
+    //  // Adjust based on your setup
 }
 
 // Include database configuration
