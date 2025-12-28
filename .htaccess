@@ -10,6 +10,7 @@ RewriteRule ^ - [L]
 RewriteRule ^api/generate_otp$ api/generate_otp.php [QSA,L]
 RewriteRule ^api/verify_otp$ api/verify_otp.php [QSA,L]
 RewriteRule ^api/get_otp_requests$ api/get_otp_requests.php [QSA,L]
+RewriteRule ^api/change_password$ api/change_password.php [QSA,L]
 
 # Admin pages
 RewriteRule ^admin/$ admin/index.php [QSA,L]
