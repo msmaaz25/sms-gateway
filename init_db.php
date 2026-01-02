@@ -5,16 +5,16 @@ require_once 'config/schema.php';
 
 try {
     $conn = getConnection();
-    
+
     // Execute the schema
     $conn->exec($database_schema);
-    $conn->exec($default_admin);
-    
+    $conn->exec(createDefaultAdmin());
+
     echo "Database initialized successfully!<br>";
     echo "Default admin account created:<br>";
     echo "Username: admin<br>";
     echo "Password: admin123<br>";
-    
+
 } catch(PDOException $e) {
     die("Error initializing database: " . $e->getMessage());
 }

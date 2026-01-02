@@ -45,9 +45,24 @@ CREATE TABLE IF NOT EXISTS sms_logs (
     user_id INT NOT NULL,
     phone_number VARCHAR(20) NOT NULL,
     message TEXT NOT NULL,
+    sms_type ENUM('otp', 'other') DEFAULT 'otp',
+    otp_request_id INT NULL,
     status ENUM('sent', 'failed', 'delivered') DEFAULT 'sent',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (otp_request_id) REFERENCES otp_requests(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS maskings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    masking_code VARCHAR(50) UNIQUE NOT NULL,
+    user_id INT NULL,
+    is_active TINYINT(1) DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_masking_code (masking_code),
+    INDEX idx_user_id (user_id)
 );
 ";
 

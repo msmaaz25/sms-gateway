@@ -8,10 +8,7 @@ require_once __DIR__ . '/../config/config.php';
 // Function to send SMS (placeholder - would integrate with actual SMS gateway)
 function sendSMS($phone_number, $message) {
     // This is a placeholder - in a real application, you would integrate with an SMS gateway
-    // For now, we'll just log the SMS attempt and return success for demo purposes
-
-    // Log the SMS
-    logSMS($phone_number, $message);
+    // For now, we'll just return success for demo purposes
 
     // In a real application, you would make an API call to your SMS gateway here
     // Example:
@@ -49,15 +46,15 @@ function sendSMS($phone_number, $message) {
 }
 
 // Function to log SMS
-function logSMS($phone_number, $message) {
+function logSMS($phone_number, $message, $sms_type = 'otp', $otp_request_id = null) {
     global $conn;
     $conn = getConnection();
 
     try {
         $user_id = $_SESSION['user_id'];
-        $query = "INSERT INTO sms_logs (user_id, phone_number, message) VALUES (?, ?, ?)";
+        $query = "INSERT INTO sms_logs (user_id, phone_number, message, sms_type, otp_request_id) VALUES (?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($query);
-        $stmt->execute([$user_id, $phone_number, $message]);
+        $stmt->execute([$user_id, $phone_number, $message, $sms_type, $otp_request_id]);
     } catch(PDOException $e) {
         error_log("Error logging SMS: " . $e->getMessage());
     }
@@ -87,5 +84,20 @@ function hasAccess($resource_user_id) {
         // Regular user can only access their own resources
         return $_SESSION['user_id'] == $resource_user_id;
     }
+}
+
+// Function to send other types of SMS (non-OTP)
+function sendOtherSMS($phone_number, $message) {
+    // This is a placeholder - in a real application, you would integrate with an SMS gateway
+    // For now, we'll just log the SMS attempt and return success for demo purposes
+
+    // Log the SMS as 'other' type
+    logSMS($phone_number, $message, 'other');
+
+    // In a real application, you would make an API call to your SMS gateway here
+    // Similar implementation as sendSMS but for non-OTP messages
+
+    // For demo purposes, return success
+    return true;
 }
 ?>

@@ -278,6 +278,18 @@ try {
                         </a>
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <div class="card function-card bg-info text-white">
+                        <div class="function-icon text-center">
+                            <i class="fas fa-mask"></i>
+                        </div>
+                        <h4>Manage Maskings</h4>
+                        <p>Create and assign maskings to customers</p>
+                        <a href="manage_maskings.php" class="function-btn btn btn-info">
+                            <i class="fas fa-cog me-1"></i>Manage
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

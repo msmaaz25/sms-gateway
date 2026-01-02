@@ -53,17 +53,21 @@ if (!class_exists('OTP')) {
                 $result = $stmt->execute([$user_id, $phone_number, $otp_code, $purpose, $expires_at]);
 
                 if($result) {
+                    // Get the ID of the newly inserted OTP request
+                    $otp_request_id = $this->conn->lastInsertId();
+
                     // Increment user's used quota
                     $userModel->incrementUserUsedQuota($user_id);
 
-                    // Send SMS using the message template
-                    $sms_sent = sendSMS($phone_number, $message);
+                    // Log the SMS with the OTP request ID
+                    logSMS($phone_number, $message, 'otp', $otp_request_id);
 
                     return [
                         'success' => true,
                         'otp_code' => $otp_code,
                         'expires_at' => $expires_at,
-                        'message_sent' => $sms_sent
+                        'message_sent' => true,
+                        'otp_request_id' => $otp_request_id
                     ];
                 } else {
                     return [
