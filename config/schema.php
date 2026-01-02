@@ -57,12 +57,14 @@ CREATE TABLE IF NOT EXISTS maskings (
     id INT AUTO_INCREMENT PRIMARY KEY,
     masking_code VARCHAR(50) UNIQUE NOT NULL,
     user_id INT NULL,
+    is_default TINYINT(1) DEFAULT 0,
     is_active TINYINT(1) DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
     INDEX idx_masking_code (masking_code),
-    INDEX idx_user_id (user_id)
+    INDEX idx_user_id (user_id),
+    INDEX idx_is_default (is_default)
 );
 ";
 

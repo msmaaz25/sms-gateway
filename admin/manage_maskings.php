@@ -41,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         switch ($_POST['action']) {
             case 'create':
                 $masking_code = sanitizeInput($_POST['masking_code']);
+                $is_default = isset($_POST['is_default']) ? 1 : 0;
 
                 if (empty($masking_code)) {
                     $message = 'Masking code is required';
@@ -50,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $success = false;
                 } else {
                     try {
-                        if ($maskingModel->createMasking($masking_code)) {
+                        if ($maskingModel->createMasking($masking_code, $is_default)) {
                             $message = 'Masking created successfully';
                             $success = true;
                         } else {
@@ -109,6 +110,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $success = true;
                     } else {
                         $message = 'Failed to update masking status';
+                        $success = false;
+                    }
+                } catch (Exception $e) {
+                    $message = $e->getMessage();
+                    $success = false;
+                }
+                break;
+
+            case 'set_default':
+                $masking_id = (int)$_POST['masking_id'];
+
+                try {
+                    if ($maskingModel->setAsDefault($masking_id)) {
+                        $message = 'Masking set as default successfully';
+                        $success = true;
+                    } else {
+                        $message = 'Failed to set masking as default';
                         $success = false;
                     }
                 } catch (Exception $e) {
@@ -197,6 +215,11 @@ $users = $userModel->getAllCustomers(); // Only customers can have maskings assi
                                        placeholder="Enter alphanumeric masking code (e.g., MyCompany123)" required>
                                 <div class="form-text">Alphanumeric characters only, max 50 characters</div>
                             </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="is_default" name="is_default" value="1">
+                                <label class="form-check-label" for="is_default">Set as Default Masking</label>
+                                <div class="form-text">Default masking can be used by all customers and cannot be assigned to a specific user</div>
+                            </div>
                             <button type="submit" class="btn btn-primary">
                                 Create Masking
                             </button>
@@ -234,7 +257,9 @@ $users = $userModel->getAllCustomers(); // Only customers can have maskings assi
                                             <td><?php echo htmlspecialchars($masking['id']); ?></td>
                                             <td><strong><?php echo htmlspecialchars($masking['masking_code']); ?></strong></td>
                                             <td>
-                                                <?php if ($masking['user_id']): ?>
+                                                <?php if ($masking['is_default']): ?>
+                                                    <span class="badge bg-info">Default</span>
+                                                <?php elseif ($masking['user_id']): ?>
                                                     <span class="badge bg-success">
                                                         <?php echo htmlspecialchars($masking['assigned_user'] ?? 'Unknown'); ?>
                                                     </span>
@@ -250,13 +275,29 @@ $users = $userModel->getAllCustomers(); // Only customers can have maskings assi
                                             <td><?php echo date('Y-m-d H:i:s', strtotime($masking['created_at'])); ?></td>
                                             <td>
                                                 <div class="btn-group btn-group-sm" role="group">
+                                                    <!-- Set as Default Button -->
+                                                    <?php if (!$masking['is_default']): ?>
+                                                        <form method="POST" class="d-inline"
+                                                              onsubmit="return confirm('Are you sure you want to set this as the default masking? This will remove default status from any other masking.');">
+                                                            <input type="hidden" name="action" value="set_default">
+                                                            <input type="hidden" name="masking_id" value="<?php echo $masking['id']; ?>">
+                                                            <button type="submit" class="btn btn-outline-info btn-sm">
+                                                                <i class="fas fa-star"></i> Set Default
+                                                            </button>
+                                                        </form>
+                                                    <?php else: ?>
+                                                        <button class="btn btn-info btn-sm" disabled>
+                                                            <i class="fas fa-star"></i> Default
+                                                        </button>
+                                                    <?php endif; ?>
+
                                                     <!-- Assign to User Button -->
-                                                    <?php if (!$masking['user_id']): ?>
+                                                    <?php if (!$masking['user_id'] && !$masking['is_default']): ?>
                                                         <button type="button" class="btn btn-outline-primary btn-sm"
                                                                 data-bs-toggle="modal" data-bs-target="#assignModal<?php echo $masking['id']; ?>">
                                                             <i class="fas fa-user-plus"></i> Assign
                                                         </button>
-                                                    <?php else: ?>
+                                                    <?php elseif ($masking['user_id'] && !$masking['is_default']): ?>
                                                         <button type="button" class="btn btn-outline-warning btn-sm"
                                                                 data-bs-toggle="modal" data-bs-target="#removeModal<?php echo $masking['id']; ?>">
                                                             <i class="fas fa-user-slash"></i> Unassign
@@ -279,15 +320,22 @@ $users = $userModel->getAllCustomers(); // Only customers can have maskings assi
                                                           onsubmit="return confirm('Are you sure you want to delete this masking? This action cannot be undone.');">
                                                         <input type="hidden" name="action" value="delete">
                                                         <input type="hidden" name="masking_id" value="<?php echo $masking['id']; ?>">
-                                                        <button type="submit" class="btn btn-outline-danger btn-sm">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
+                                                        <?php if (!$masking['is_default']): ?>
+                                                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        <?php else: ?>
+                                                            <button type="button" class="btn btn-outline-danger btn-sm" disabled>
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        <?php endif; ?>
                                                     </form>
                                                 </div>
                                             </td>
                                         </tr>
 
                                         <!-- Assign Modal -->
+                                        <?php if (!$masking['is_default']): ?>
                                         <div class="modal fade" id="assignModal<?php echo $masking['id']; ?>" tabindex="-1">
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
@@ -323,8 +371,10 @@ $users = $userModel->getAllCustomers(); // Only customers can have maskings assi
                                                 </div>
                                             </div>
                                         </div>
+                                        <?php endif; ?>
 
                                         <!-- Remove Assignment Modal -->
+                                        <?php if (!$masking['is_default']): ?>
                                         <div class="modal fade" id="removeModal<?php echo $masking['id']; ?>" tabindex="-1">
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
@@ -346,6 +396,7 @@ $users = $userModel->getAllCustomers(); // Only customers can have maskings assi
                                                 </div>
                                             </div>
                                         </div>
+                                        <?php endif; ?>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>

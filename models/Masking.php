@@ -17,16 +17,21 @@ if (!class_exists('Masking')) {
         }
 
         // Create a new masking
-        public function createMasking($masking_code) {
+        public function createMasking($masking_code, $is_default = 0) {
             try {
                 // Check if masking code already exists
                 if ($this->maskingCodeExists($masking_code)) {
                     throw new Exception("Masking code already exists");
                 }
 
-                $query = "INSERT INTO maskings (masking_code) VALUES (?)";
+                // If setting as default, remove default from existing masking
+                if ($is_default) {
+                    $this->removeDefaultMasking();
+                }
+
+                $query = "INSERT INTO maskings (masking_code, is_default) VALUES (?, ?)";
                 $stmt = $this->conn->prepare($query);
-                return $stmt->execute([$masking_code]);
+                return $stmt->execute([$masking_code, $is_default]);
             } catch(PDOException $e) {
                 throw new Exception("Error creating masking: " . $e->getMessage());
             }
@@ -35,9 +40,9 @@ if (!class_exists('Masking')) {
         // Get all maskings
         public function getAllMaskings() {
             try {
-                $query = "SELECT m.*, u.username as assigned_user FROM maskings m 
+                $query = "SELECT m.*, u.username as assigned_user FROM maskings m
                           LEFT JOIN users u ON m.user_id = u.id
-                          ORDER BY m.created_at DESC";
+                          ORDER BY m.is_default DESC, m.created_at DESC";
                 $stmt = $this->conn->prepare($query);
                 $stmt->execute();
                 return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -49,7 +54,7 @@ if (!class_exists('Masking')) {
         // Get masking by ID
         public function getMaskingById($id) {
             try {
-                $query = "SELECT m.*, u.username as assigned_user FROM maskings m 
+                $query = "SELECT m.*, u.username as assigned_user FROM maskings m
                           LEFT JOIN users u ON m.user_id = u.id
                           WHERE m.id = ?";
                 $stmt = $this->conn->prepare($query);
@@ -72,11 +77,55 @@ if (!class_exists('Masking')) {
             }
         }
 
+        // Get default masking
+        public function getDefaultMasking() {
+            try {
+                $query = "SELECT * FROM maskings WHERE is_default = 1 LIMIT 1";
+                $stmt = $this->conn->prepare($query);
+                $stmt->execute();
+                return $stmt->fetch(PDO::FETCH_ASSOC);
+            } catch(PDOException $e) {
+                throw new Exception("Error getting default masking: " . $e->getMessage());
+            }
+        }
+
+        // Set masking as default
+        public function setAsDefault($masking_id) {
+            try {
+                // First remove default from existing masking
+                $this->removeDefaultMasking();
+
+                // Set the new masking as default
+                $query = "UPDATE maskings SET is_default = 1 WHERE id = ?";
+                $stmt = $this->conn->prepare($query);
+                return $stmt->execute([$masking_id]);
+            } catch(PDOException $e) {
+                throw new Exception("Error setting masking as default: " . $e->getMessage());
+            }
+        }
+
+        // Remove default masking (set all to 0)
+        private function removeDefaultMasking() {
+            try {
+                $query = "UPDATE maskings SET is_default = 0 WHERE is_default = 1";
+                $stmt = $this->conn->prepare($query);
+                return $stmt->execute();
+            } catch(PDOException $e) {
+                throw new Exception("Error removing default masking: " . $e->getMessage());
+            }
+        }
+
         // Assign a masking to a user
         public function assignMaskingToUser($masking_id, $user_id) {
             try {
                 // Check if masking is already assigned to another user
                 $masking = $this->getMaskingById($masking_id);
+
+                // Check if masking is default (can't be assigned to a specific user)
+                if ($masking && $masking['is_default'] == 1) {
+                    throw new Exception("Default masking cannot be assigned to a specific user");
+                }
+
                 if ($masking && $masking['user_id'] != null && $masking['user_id'] != $user_id) {
                     throw new Exception("This masking is already assigned to another user");
                 }
@@ -92,6 +141,12 @@ if (!class_exists('Masking')) {
         // Remove masking assignment from user
         public function removeMaskingFromUser($masking_id) {
             try {
+                // Check if masking is default (can't be unassigned)
+                $masking = $this->getMaskingById($masking_id);
+                if ($masking && $masking['is_default'] == 1) {
+                    throw new Exception("Default masking cannot be unassigned");
+                }
+
                 $query = "UPDATE maskings SET user_id = NULL WHERE id = ?";
                 $stmt = $this->conn->prepare($query);
                 return $stmt->execute([$masking_id]);
@@ -114,6 +169,12 @@ if (!class_exists('Masking')) {
         // Delete a masking
         public function deleteMasking($id) {
             try {
+                // Check if masking is default (can't be deleted)
+                $masking = $this->getMaskingById($id);
+                if ($masking && $masking['is_default'] == 1) {
+                    throw new Exception("Default masking cannot be deleted");
+                }
+
                 $query = "DELETE FROM maskings WHERE id = ?";
                 $stmt = $this->conn->prepare($query);
                 return $stmt->execute([$id]);
