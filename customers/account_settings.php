@@ -13,6 +13,51 @@ $message = '';
 $user = $userModel->getUserById($_SESSION['user_id']);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Support AJAX JSON requests (from dashboard) — return JSON responses
+    $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+    if (stripos($contentType, 'application/json') !== false) {
+        $input = json_decode(file_get_contents('php://input'), true);
+        $current_password = $input['current_password'] ?? '';
+        $new_password = $input['new_password'] ?? '';
+
+        if (empty($current_password) || empty($new_password)) {
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Current password and new password are required']);
+            exit;
+        }
+
+        if (strlen($new_password) < 6) {
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'New password must be at least 6 characters']);
+            exit;
+        }
+
+        // Verify current password
+        if (password_verify($current_password, $user['password'])) {
+            try {
+                $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+                $query = "UPDATE users SET password = ? WHERE id = ?";
+                $conn = getConnection();
+                $stmt = $conn->prepare($query);
+                $stmt->execute([$hashed_password, $_SESSION['user_id']]);
+                header('Content-Type: application/json');
+                echo json_encode(['success' => true, 'message' => 'Password changed successfully']);
+                exit;
+            } catch (Exception $e) {
+                header('Content-Type: application/json');
+                http_response_code(500);
+                echo json_encode(['success' => false, 'message' => 'Error changing password: ' . $e->getMessage()]);
+                exit;
+            }
+        } else {
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Current password is incorrect']);
+            exit;
+        }
+    }
     if (isset($_POST['action']) && $_POST['action'] === 'update_profile') {
         $username = sanitizeInput($_POST['username']);
         $email = sanitizeInput($_POST['email']);

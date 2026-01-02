@@ -454,8 +454,8 @@ $today_otp_requests = array_filter($otp_requests, function($otp) {
                 return;
             }
 
-            // Send request to change password API
-            fetch('../api/change_password', {
+            // Send request to change password (handled by account_settings.php)
+            fetch('account_settings.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

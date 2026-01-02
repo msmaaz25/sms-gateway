@@ -1,13 +1,9 @@
 <?php
 require_once '../config/config.php';
 
-// If user is logged in, redirect to appropriate dashboard
-if (isLoggedIn()) {
-    if (isAdmin()) {
-        header("Location: admin/dashboard.php");
-    } else {
-        header("Location: customers/dashboard.php");
-    }
+// Allow access only to logged-in customers. Redirect others to customer login.
+if (!isLoggedIn() || !isCustomer()) {
+    header('Location: ../login.php');
     exit();
 }
 ?>
