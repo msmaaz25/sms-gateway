@@ -10,38 +10,15 @@ RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# API endpoints - rewrite to PHP files
+# Explicit API endpoints
 RewriteRule ^api/generate_otp$ api/generate_otp.php [QSA,L]
 RewriteRule ^api/verify_otp$ api/verify_otp.php [QSA,L]
 
-# Admin pages
-RewriteRule ^admin/$ admin/index.php [QSA,L]
-RewriteRule ^admin/login$ admin/login.php [QSA,L]
-RewriteRule ^admin/dashboard$ admin/dashboard.php [QSA,L]
-RewriteRule ^admin/manage_customers$ admin/manage_customers.php [QSA,L]
-RewriteRule ^admin/view_otp_requests$ admin/view_otp_requests.php [QSA,L]
-RewriteRule ^admin/view_message_templates$ admin/view_message_templates.php [QSA,L]
-RewriteRule ^admin/manage_quotas$ admin/manage_quotas.php [QSA,L]
-RewriteRule ^admin/manage_maskings$ admin/manage_maskings.php [QSA,L]
-
-# Customer pages
-RewriteRule ^customers/$ customers/index.php [QSA,L]
-RewriteRule ^customers/dashboard$ customers/dashboard.php [QSA,L]
-RewriteRule ^customers/generate_otp$ customers/generate_otp.php [QSA,L]
-RewriteRule ^customers/view_otp_requests$ customers/view_otp_requests.php [QSA,L]
-RewriteRule ^customers/manage_templates$ customers/manage_templates.php [QSA,L]
-RewriteRule ^customers/account_settings$ customers/account_settings.php [QSA,L]
-
-# Main pages
-RewriteRule ^login$ login.php [QSA,L]
-RewriteRule ^logout$ logout.php [QSA,L]
-RewriteRule ^$ index.php [QSA,L]
-
-# Rewrite URLs without extension to .php files if they exist
+# Generic rewrite: map /path to /path.php when that file exists
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}.php -f
-RewriteRule ^([a-zA-Z0-9_-]+)/?$ $1.php [QSA,L]
+RewriteRule ^([A-Za-z0-9/_-]+)/?$ $1.php [QSA,L]
 
 # Fallback to index.php for any other routes
 RewriteRule ^(.*)$ index.php [QSA,L]
