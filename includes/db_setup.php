@@ -10,7 +10,7 @@ function checkDatabaseSetup() {
         $conn = getConnection();
 
         // Check if required tables exist
-        $tables = ['users', 'otp_message_templates', 'otp_requests', 'sms_logs'];
+        $tables = ['users', 'otp_message_templates', 'otp_requests'];
 
         foreach ($tables as $table) {
             $stmt = $conn->query("SHOW TABLES LIKE '$table'");

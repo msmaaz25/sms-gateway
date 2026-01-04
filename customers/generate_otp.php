@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $message = 'Invalid phone number format';
     } else {
         try {
-            $result = $otpModel->generateOTP($_SESSION['user_id'], $phone_number, $purpose, 10);
+            $result = $otpModel->generateOTP($_SESSION['user_id'], $phone_number, $purpose, 10, null, null);
             if ($result['success']) {
                 $message = 'OTP generated and sent successfully: ' . $result['otp_code'] . '. Expires at: ' . date('Y-m-d H:i:s', strtotime($result['expires_at']));
             } else {

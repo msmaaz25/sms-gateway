@@ -37,21 +37,11 @@ CREATE TABLE IF NOT EXISTS otp_requests (
     status ENUM('pending', 'verified', 'expired') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     expires_at TIMESTAMP NOT NULL,
+    sent_message TEXT,
+    sent_mask VARCHAR(50),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS sms_logs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    phone_number VARCHAR(20) NOT NULL,
-    message TEXT NOT NULL,
-    sms_type ENUM('otp', 'other') DEFAULT 'otp',
-    otp_request_id INT NULL,
-    status ENUM('sent', 'failed', 'delivered') DEFAULT 'sent',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (otp_request_id) REFERENCES otp_requests(id) ON DELETE SET NULL
-);
 
 CREATE TABLE IF NOT EXISTS maskings (
     id INT AUTO_INCREMENT PRIMARY KEY,

@@ -100,36 +100,6 @@ if (!isLoggedIn() || !isCustomer()) {
                     </div>
                 </div>
                 
-                <div class="card mt-3">
-                    <div class="card-header">
-                        <h5>Get OTP Requests</h5>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>GET</strong> <code>/api/get_otp_requests</code></p>
-                        <p>Get all OTP requests for the authenticated user.</p>
-                        
-                        <h6>Headers:</h6>
-                        <ul>
-                            <li>Authorization: Bearer YOUR_API_KEY</li>
-                        </ul>
-                        
-                        <h6>Response:</h6>
-                        <pre>{
-  "success": true,
-  "data": [
-    {
-      "id": 1,
-      "phone_number": "+1234567890",
-      "otp_code": "123456",
-      "otp_purpose": "Login verification",
-      "status": "verified",
-      "created_at": "2023-12-27 14:30:00",
-      "expires_at": "2023-12-27 14:40:00"
-    }
-  ]
-}</pre>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

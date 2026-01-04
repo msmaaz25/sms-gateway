@@ -72,20 +72,6 @@ function sendSMS($phone_number, $message, $mask = null) {
     }
 }
 
-// Function to log SMS
-function logSMS($phone_number, $message, $sms_type = 'otp', $otp_request_id = null) {
-    global $conn;
-    $conn = getConnection();
-
-    try {
-        $user_id = $_SESSION['user_id'];
-        $query = "INSERT INTO sms_logs (user_id, phone_number, message, sms_type, otp_request_id) VALUES (?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($query);
-        $stmt->execute([$user_id, $phone_number, $message, $sms_type, $otp_request_id]);
-    } catch(PDOException $e) {
-        error_log("Error logging SMS: " . $e->getMessage());
-    }
-}
 
 // Function to validate phone number
 function validatePhoneNumber($phone) {
@@ -116,10 +102,7 @@ function hasAccess($resource_user_id) {
 // Function to send other types of SMS (non-OTP)
 function sendOtherSMS($phone_number, $message) {
     // This is a placeholder - in a real application, you would integrate with an SMS gateway
-    // For now, we'll just log the SMS attempt and return success for demo purposes
-
-    // Log the SMS as 'other' type
-    logSMS($phone_number, $message, 'other');
+    // For now, we'll just return success for demo purposes
 
     // In a real application, you would make an API call to your SMS gateway here
     // Similar implementation as sendSMS but for non-OTP messages

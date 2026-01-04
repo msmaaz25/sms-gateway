@@ -30,7 +30,6 @@ sms-gateway/
 ├── api/                   # API endpoints
 │   ├── generate_otp.php   # Generate OTP via API
 │   ├── verify_otp.php     # Verify OTP via API
-│   ├── get_otp_requests.php # Get OTP requests via API
 │   └── index.php          # API documentation
 ├── config/                # Configuration files
 │   ├── config.php         # Main configuration
@@ -109,12 +108,6 @@ Body:
   }
 ```
 
-### Get OTP Requests
-```
-GET /api/get_otp_requests
-Headers:
-  Authorization: Bearer YOUR_API_KEY
-```
 
 ## Security Notes
 

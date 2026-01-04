@@ -182,16 +182,10 @@ try {
         }
     }
 
-    // Insert OTP request into database to track and increment quota
-    $conn = getConnection();
-    $query = "INSERT INTO otp_requests (user_id, phone_number, otp_code, otp_purpose) VALUES (?, ?, ?, ?)";
-    $stmt = $conn->prepare($query);
-    $result = $stmt->execute([$user['id'], $phone_number, $otp_code, $purpose]);
+    // Use the OTP model to generate the OTP which will store the message and mask
+    $result = $otpModel->generateOTP($user['id'], $phone_number, $purpose, 10, $message, $mask);
 
-    if($result) {
-        // Increment user's used quota
-        $userModel->incrementUserUsedQuota($user['id']);
-
+    if($result['success']) {
         // Send SMS using the message and mask
         $sms_sent = sendSMS($phone_number, $message, $mask);
 

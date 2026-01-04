@@ -55,6 +55,8 @@ $otp_requests = $otpModel->getAllOTPRequests();
                                         <th>Phone Number</th>
                                         <th>OTP Code</th>
                                         <th>Purpose</th>
+                                        <th>Sent Message</th>
+                                        <th>Sent Mask</th>
                                         <th>Status</th>
                                         <th>Created</th>
                                         <th>Expires</th>
@@ -70,8 +72,32 @@ $otp_requests = $otpModel->getAllOTPRequests();
                                         <td><?php echo htmlspecialchars($request['otp_code']); ?></td>
                                         <td><?php echo htmlspecialchars($request['otp_purpose'] ?? 'N/A'); ?></td>
                                         <td>
-                                            <span class="badge 
-                                                <?php 
+                                            <?php if (!empty($request['sent_message'])): ?>
+                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#messageModal<?php echo $request['id']; ?>">
+                                                    View Message
+                                                </button>
+                                                <!-- Message Modal -->
+                                                <div class="modal fade" id="messageModal<?php echo $request['id']; ?>" tabindex="-1">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Sent Message</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <pre><?php echo htmlspecialchars($request['sent_message']); ?></pre>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <?php else: ?>
+                                                <span class="text-muted">N/A</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?php echo htmlspecialchars($request['sent_mask'] ?? 'N/A'); ?></td>
+                                        <td>
+                                            <span class="badge
+                                                <?php
                                                     if($request['status'] === 'verified') echo 'bg-success';
                                                     elseif($request['status'] === 'expired') echo 'bg-danger';
                                                     else echo 'bg-warning';
@@ -86,7 +112,7 @@ $otp_requests = $otpModel->getAllOTPRequests();
                                     <?php endforeach; ?>
                                     <?php if (empty($otp_requests)): ?>
                                     <tr>
-                                        <td colspan="9" class="text-center">No OTP requests found</td>
+                                        <td colspan="11" class="text-center">No OTP requests found</td>
                                     </tr>
                                     <?php endif; ?>
                                 </tbody>

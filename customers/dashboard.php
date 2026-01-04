@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $generate_otp_success = false;
         } else {
             try {
-                $result = $otpModel->generateOTP($_SESSION['user_id'], $phone_number, $purpose, 10);
+                $result = $otpModel->generateOTP($_SESSION['user_id'], $phone_number, $purpose, 10, null, null);
                 if ($result['success']) {
                     $generate_otp_message = 'OTP generated and sent successfully: ' . $result['otp_code'] . '. Expires at: ' . date('Y-m-d H:i:s', strtotime($result['expires_at']));
                     $generate_otp_success = true;
@@ -189,6 +189,8 @@ $today_otp_requests = array_filter($otp_requests, function($otp) {
                                 <th>Phone Number</th>
                                 <th>OTP Code</th>
                                 <th>Purpose</th>
+                                <th>Sent Message</th>
+                                <th>Sent Mask</th>
                                 <th>Status</th>
                                 <th>Created</th>
                                 <th>Expires</th>
@@ -201,6 +203,30 @@ $today_otp_requests = array_filter($otp_requests, function($otp) {
                                 <td><?php echo htmlspecialchars($request['phone_number']); ?></td>
                                 <td><?php echo htmlspecialchars($request['otp_code']); ?></td>
                                 <td><?php echo htmlspecialchars($request['otp_purpose'] ?? 'N/A'); ?></td>
+                                <td>
+                                    <?php if (!empty($request['sent_message'])): ?>
+                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#messageModal<?php echo $request['id']; ?>">
+                                            View Message
+                                        </button>
+                                        <!-- Message Modal -->
+                                        <div class="modal fade" id="messageModal<?php echo $request['id']; ?>" tabindex="-1">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Sent Message</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <pre><?php echo htmlspecialchars($request['sent_message']); ?></pre>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php else: ?>
+                                        <span class="text-muted">N/A</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td><?php echo htmlspecialchars($request['sent_mask'] ?? 'N/A'); ?></td>
                                 <td>
                                     <span class="badge
                                         <?php
@@ -218,7 +244,7 @@ $today_otp_requests = array_filter($otp_requests, function($otp) {
                             <?php endforeach; ?>
                             <?php if (empty($otp_requests)): ?>
                             <tr>
-                                <td colspan="7" class="text-center">No OTP requests found</td>
+                                <td colspan="9" class="text-center">No OTP requests found</td>
                             </tr>
                             <?php endif; ?>
                         </tbody>

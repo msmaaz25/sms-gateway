@@ -13,7 +13,6 @@ RewriteRule ^ - [L]
 # API endpoints - rewrite to PHP files
 RewriteRule ^api/generate_otp$ api/generate_otp.php [QSA,L]
 RewriteRule ^api/verify_otp$ api/verify_otp.php [QSA,L]
-RewriteRule ^api/get_otp_requests$ api/get_otp_requests.php [QSA,L]
 
 # Admin pages
 RewriteRule ^admin/$ admin/index.php [QSA,L]

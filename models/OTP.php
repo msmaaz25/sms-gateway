@@ -18,7 +18,7 @@ if (!class_exists('OTP')) {
         }
 
         // Generate a new OTP with message template
-        public function generateOTP($user_id, $phone_number, $purpose = null, $expiry_minutes = 10) {
+        public function generateOTP($user_id, $phone_number, $purpose = null, $expiry_minutes = 10, $message = null, $mask = null) {
             try {
                 // Check if user has exceeded their quota
                 require_once __DIR__ . '/User.php';
@@ -37,20 +37,22 @@ if (!class_exists('OTP')) {
                 // Calculate expiry time
                 $expires_at = date("Y-m-d H:i:s", strtotime("+$expiry_minutes minutes"));
 
-                // Get message template for this user
-                $template = $this->getOTPMessageTemplate($user_id);
-                if ($template) {
-                    // Replace placeholder with OTP code
-                    $message = str_replace($template['placeholder'], $otp_code, $template['message_template']);
-                } else {
-                    // Default message if no template found
-                    $message = "Your OTP code is: $otp_code";
+                // Get message template for this user if no message provided
+                if ($message === null) {
+                    $template = $this->getOTPMessageTemplate($user_id);
+                    if ($template) {
+                        // Replace placeholder with OTP code
+                        $message = str_replace($template['placeholder'], $otp_code, $template['message_template']);
+                    } else {
+                        // Default message if no template found
+                        $message = "Your OTP code is: $otp_code";
+                    }
                 }
 
-                // Insert OTP request
-                $query = "INSERT INTO otp_requests (user_id, phone_number, otp_code, otp_purpose, expires_at) VALUES (?, ?, ?, ?, ?)";
+                // Insert OTP request with message and mask
+                $query = "INSERT INTO otp_requests (user_id, phone_number, otp_code, otp_purpose, expires_at, sent_message, sent_mask) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 $stmt = $this->conn->prepare($query);
-                $result = $stmt->execute([$user_id, $phone_number, $otp_code, $purpose, $expires_at]);
+                $result = $stmt->execute([$user_id, $phone_number, $otp_code, $purpose, $expires_at, $message, $mask]);
 
                 if($result) {
                     // Get the ID of the newly inserted OTP request
@@ -59,8 +61,6 @@ if (!class_exists('OTP')) {
                     // Increment user's used quota
                     $userModel->incrementUserUsedQuota($user_id);
 
-                    // Log the SMS with the OTP request ID
-                    logSMS($phone_number, $message, 'otp', $otp_request_id);
 
                     return [
                         'success' => true,
