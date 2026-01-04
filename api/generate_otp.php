@@ -16,7 +16,22 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // Get API key from header
+// Try multiple methods to get the authorization header due to Apache configurations
 $auth_header = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+
+// If not found, try getting from REDIRECT_HTTP_AUTHORIZATION (Apache with mod_rewrite)
+if (empty($auth_header) && isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+    $auth_header = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+}
+
+// If still not found, try getting all headers
+if (empty($auth_header) && function_exists('getallheaders')) {
+    $headers = getallheaders();
+    if (isset($headers['Authorization']) || isset($headers['authorization'])) {
+        $auth_header = $headers['Authorization'] ?? $headers['authorization'];
+    }
+}
+
 if (strpos($auth_header, 'Bearer ') !== 0) {
     http_response_code(401);
     echo json_encode(['error' => 'Authorization header missing or invalid']);
@@ -177,11 +192,8 @@ try {
         // Increment user's used quota
         $userModel->incrementUserUsedQuota($user['id']);
 
-        // Log the request with the new function
-        logAPIRequest($user['id'], $phone_number, $otp_code, $message, $mask, $purpose);
-
-        // Send SMS using the message
-        $sms_sent = sendSMS($phone_number, $message);
+        // Send SMS using the message and mask
+        $sms_sent = sendSMS($phone_number, $message, $mask);
 
         echo json_encode([
             'success' => true,
@@ -232,10 +244,5 @@ function validatePhoneNumberFormat($phone_number) {
 
     // If none of the conditions match, return false
     return false;
-}
-
-// Function to log API request (empty body for now)
-function logAPIRequest($user_id, $phone_number, $otp_code, $message, $mask, $purpose) {
-    // This function body will be implemented later
 }
 ?>

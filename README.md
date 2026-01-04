@@ -51,16 +51,24 @@ sms-gateway/
 
 ## Setup Instructions
 
-1. **Database Setup**:
+1. **Environment Variables Setup**:
+   - Copy `.env.example` to `.env`
+   - Update the values in `.env` with your actual Zong SMS API credentials:
+     ```
+     ZONG_LOGIN_ID=your_actual_login_id
+     ZONG_LOGIN_PASSWORD=your_actual_password
+     ```
+
+2. **Database Setup**:
    - Make sure your XAMPP is running with MySQL
    - Update database credentials in `config/database.php` if needed
    - Run `init_db.php` to create the database tables and default admin user
 
-2. **Default Admin Credentials**:
+3. **Default Admin Credentials**:
    - Username: `admin`
    - Password: `admin123`
 
-3. **Access the Application**:
+4. **Access the Application**:
    - Visit `http://localhost/SMS%20Gateway/sms-gateway/` in your browser
    - Login with admin credentials to access admin features
    - Create customer accounts for end users
@@ -121,3 +129,5 @@ Headers:
 - Modify the UI in the respective interface files
 - Extend functionality by adding to the models in the `models/` directory
 - Customize the SMS sending function in `includes/utils.php` to integrate with your SMS gateway
+- Configure your Zong SMS API credentials in the `.env` file
+- The mask parameter for SMS can be customized when calling the sendSMS function, otherwise it will be empty

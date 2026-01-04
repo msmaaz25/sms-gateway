@@ -1,4 +1,8 @@
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Main landing page - shows company info and login form
 if (session_status() == PHP_SESSION_NONE) {
     session_start();

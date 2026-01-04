@@ -14,7 +14,22 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // Get API key from header
+// Try multiple methods to get the authorization header due to Apache configurations
 $auth_header = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+
+// If not found, try getting from REDIRECT_HTTP_AUTHORIZATION (Apache with mod_rewrite)
+if (empty($auth_header) && isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+    $auth_header = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+}
+
+// If still not found, try getting all headers
+if (empty($auth_header) && function_exists('getallheaders')) {
+    $headers = getallheaders();
+    if (isset($headers['Authorization']) || isset($headers['authorization'])) {
+        $auth_header = $headers['Authorization'] ?? $headers['authorization'];
+    }
+}
+
 if (strpos($auth_header, 'Bearer ') !== 0) {
     http_response_code(401);
     echo json_encode(['error' => 'Authorization header missing or invalid']);

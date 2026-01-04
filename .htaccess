@@ -1,6 +1,10 @@
 Options -Indexes
 RewriteEngine On
 
+# Pass Authorization header to PHP (for Apache servers)
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
 # Skip rewriting for actual files and directories
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d

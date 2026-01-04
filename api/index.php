@@ -48,7 +48,7 @@ if (!isLoggedIn() || !isCustomer()) {
                     </div>
                     <div class="card-body">
                         <p><strong>POST</strong> <code>/api/generate_otp</code></p>
-                        <p>Generate a new OTP for a phone number.</p>
+                        <p>Generate a new OTP for a phone number. Optionally specify a mask for the SMS sender ID.</p>
                         
                         <h6>Headers:</h6>
                         <ul>
@@ -59,15 +59,16 @@ if (!isLoggedIn() || !isCustomer()) {
                         <h6>Body:</h6>
                         <pre>{
   "phone_number": "+1234567890",
-  "purpose": "Login verification"
+  "purpose": "Login verification",
+  "mask": "YourMaskName" (optional)
 }</pre>
                         
                         <h6>Response:</h6>
                         <pre>{
   "success": true,
-  "message": "OTP generated successfully",
+  "message": "OTP sent successfully",
   "otp_code": "123456",
-  "expires_at": "2023-12-27 15:30:00"
+  "message_sent": true (indicates if SMS was sent successfully)
 }</pre>
                     </div>
                 </div>

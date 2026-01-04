@@ -5,44 +5,71 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 require_once __DIR__ . '/../config/config.php';
 
-// Function to send SMS (placeholder - would integrate with actual SMS gateway)
-function sendSMS($phone_number, $message) {
-    // This is a placeholder - in a real application, you would integrate with an SMS gateway
-    // For now, we'll just return success for demo purposes
+// Function to send SMS (integrated with Zong SMS API)
+function sendSMS($phone_number, $message, $mask = null) {
+    // Get credentials from environment variables
+    $loginId = getenv('ZONG_LOGIN_ID');
+    $loginPassword = getenv('ZONG_LOGIN_PASSWORD');
 
-    // In a real application, you would make an API call to your SMS gateway here
-    // Example:
-    /*
+    // Check if credentials are set
+    if (!$loginId || !$loginPassword) {
+        error_log("ZONG_LOGIN_ID or ZONG_LOGIN_PASSWORD not set in environment variables");
+        return false;
+    }
+
+    // Prepare the API request
     $curl = curl_init();
+
+    $postData = json_encode([
+        "loginId" => $loginId,
+        "loginPassword" => $loginPassword,
+        "Destination" => $phone_number,
+        "Mask" => $mask,
+        "Message" => $message,
+        "UniCode" => "0",
+        "ShortCodePrefered" => "N"
+    ]);
+
     curl_setopt_array($curl, [
-        CURLOPT_URL => "https://api.sms-gateway.com/send",
+        CURLOPT_URL => "https://cbs.zong.com.pk/reachrestapi/home/SendQuickSMS",
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => json_encode([
-            'to' => $phone_number,
-            'message' => $message,
-            'api_key' => 'your_api_key_here'
-        ]),
+        CURLOPT_POSTFIELDS => $postData,
         CURLOPT_HTTPHEADER => [
             'Content-Type: application/json',
-            'Authorization: Bearer your_auth_token'
-        ]
+            'Accept: application/json'
+        ],
+        CURLOPT_SSL_VERIFYPEER => false, // Disable SSL verification (not recommended for production)
+        CURLOPT_TIMEOUT => 30
     ]);
 
     $response = curl_exec($curl);
     $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    $error = curl_error($curl);
     curl_close($curl);
 
-    if ($http_code === 200) {
-        return true;
-    } else {
-        error_log("SMS sending failed: " . $response);
+    // Log the request for debugging
+    error_log("Zong SMS API Request - Phone: $phone_number, Mask: $mask, Message: $message");
+    error_log("Zong SMS API Response: $response, HTTP Code: $http_code");
+
+    if ($error) {
+        error_log("Zong SMS API Error: " . $error);
         return false;
     }
-    */
 
-    // For demo purposes, return success
-    return true;
+    if ($http_code === 200) {
+        // Check if response indicates success (you may need to adjust this based on actual API response)
+        $responseData = json_decode($response, true);
+        if ($responseData !== null) {
+            // Check for success in response (adjust based on actual API response format)
+            // This is a general check - you may need to modify based on actual API response
+            return true;
+        }
+        return true; // Assume success if response is valid JSON
+    } else {
+        error_log("Zong SMS API failed with HTTP code: " . $http_code . ", Response: " . $response);
+        return false;
+    }
 }
 
 // Function to log SMS

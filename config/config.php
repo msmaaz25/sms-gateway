@@ -4,6 +4,10 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+// Load environment variables
+require_once __DIR__ . '/env.php';
+loadEnv(__DIR__ . '/../.env');
+
 // Application settings
 if (!defined('APP_NAME')) {
     define('APP_NAME', 'OTP Service');
@@ -16,10 +20,10 @@ if (!defined('BASE_URL')) {
    $path = dirname(dirname($_SERVER['SCRIPT_NAME'
 ]));
    $path = rtrim($path, '/');
-   define('BASE_URL', $protocol . '://' . $host . 
+   define('BASE_URL', $protocol . '://' . $host .
     $path);
-    
-    
+
+
     //  // Adjust based on your setup
 }
 
