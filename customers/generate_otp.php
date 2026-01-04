@@ -44,10 +44,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="dashboard.php">OTP Service Customer</a>
+            <a class="navbar-brand" href="dashboard">OTP Service Customer</a>
             <div class="navbar-nav ms-auto">
                 <span class="navbar-text me-3">Welcome, <?php echo $_SESSION['username']; ?>!</span>
-                <a class="nav-link" href="../logout.php">Logout</a>
+                <a class="nav-link" href="../logout">Logout</a>
             </div>
         </div>
     </nav>
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="row">
             <div class="col-md-12">
                 <h1>Generate New OTP</h1>
-                <a href="dashboard.php" class="btn btn-secondary mb-3">← Back to Dashboard</a>
+                <a href="dashboard" class="btn btn-secondary mb-3">← Back to Dashboard</a>
 
                 <?php if (!empty($message)): ?>
                     <div class="alert

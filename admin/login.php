@@ -10,9 +10,9 @@ require_once __DIR__ . '/../includes/db_setup.php';
 // If already logged in, redirect based on user type
 if (isLoggedIn()) {
     if (isAdmin()) {
-        header("Location: dashboard.php");
+        header("Location: dashboard");
     } else {
-        header("Location: ../customers/dashboard.php");
+        header("Location: ../customers/dashboard");
     }
     exit();
 }
@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $login_result = Auth::login($username, $password);
         if ($login_result['success']) {
             if ($login_result['user_type'] === 'admin') {
-                header("Location: dashboard.php");
+                header("Location: dashboard");
                 exit();
             } else {
                 $error = 'Admin access required';
@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <button type="submit" class="btn btn-primary w-100">Login as Admin</button>
                         </form>
                         
-                        <a href="../index.php" class="back-link">← Back to Customer Portal</a>
+                        <a href="../index" class="back-link">← Back to Customer Portal</a>
                     </div>
                 </div>
             </div>

@@ -12,16 +12,16 @@ require_once __DIR__ . '/../includes/db_setup.php';
 
 // If not logged in, redirect to main login
 if (!isLoggedIn()) {
-    header("Location: ../index.php");
+    header("Location: ../index");
     exit();
 }
 
 // If logged in but not customer, redirect appropriately
 if (!isCustomer()) {
     if (isAdmin()) {
-        header("Location: ../admin/dashboard.php");
+        header("Location: ../admin/dashboard");
     } else {
-        header("Location: ../index.php");
+        header("Location: ../index");
     }
     exit();
 }
@@ -119,7 +119,7 @@ $today_otp_requests = array_filter($otp_requests, function($otp) {
                 <button class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#profileModal">
                     <i class="fas fa-user"></i> Profile
                 </button>
-                <a class="nav-link" href="../logout.php">
+                <a class="nav-link" href="../logout">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
             </div>

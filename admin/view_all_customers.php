@@ -23,10 +23,10 @@ $customers = $userModel->getAllCustomers();
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="dashboard.php">OTP Service Admin</a>
+            <a class="navbar-brand" href="dashboard">OTP Service Admin</a>
             <div class="navbar-nav ms-auto">
                 <span class="navbar-text me-3">Welcome, <?php echo $_SESSION['username']; ?>!</span>
-                <a class="nav-link" href="../logout.php">Logout</a>
+                <a class="nav-link" href="../logout">Logout</a>
             </div>
         </div>
     </nav>
@@ -35,7 +35,7 @@ $customers = $userModel->getAllCustomers();
         <div class="row">
             <div class="col-md-12">
                 <h1>All Customers</h1>
-                <a href="dashboard.php" class="btn btn-secondary mb-3">← Back to Dashboard</a>
+                <a href="dashboard" class="btn btn-secondary mb-3">← Back to Dashboard</a>
                 
                 <!-- Customers Table -->
                 <div class="card">

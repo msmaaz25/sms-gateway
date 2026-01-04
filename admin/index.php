@@ -9,21 +9,21 @@ require_once __DIR__ . '/../includes/db_setup.php';
 
 // If not logged in, redirect to admin login
 if (!isLoggedIn()) {
-    header("Location: login.php");
+    header("Location: login");
     exit();
 }
 
 // If logged in but not admin, redirect appropriately
 if (!isAdmin()) {
     if (isCustomer()) {
-        header("Location: ../customers/dashboard.php");
+        header("Location: ../customers/dashboard");
     } else {
-        header("Location: ../index.php");
+        header("Location: ../index");
     }
     exit();
 }
 
 // If admin is logged in, redirect to dashboard
-header("Location: dashboard.php");
+header("Location: dashboard");
 exit();
 ?>

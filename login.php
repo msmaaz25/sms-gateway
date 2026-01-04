@@ -13,13 +13,13 @@ require_once __DIR__ . '/includes/db_setup.php';
 // If already logged in, redirect to appropriate dashboard
 if (isLoggedIn()) {
     if (isAdmin()) {
-        header("Location: admin/dashboard.php");
+        header("Location: admin/dashboard");
     } else {
-        header("Location: customers/dashboard.php");
+        header("Location: customers/dashboard");
     }
     exit();
 } else {
-    header("Location: index.php");
+    header("Location: index");
     exit();
 }
 ?>

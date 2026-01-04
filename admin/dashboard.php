@@ -12,16 +12,16 @@ require_once __DIR__ . '/../includes/db_setup.php';
 
 // If not logged in, redirect to admin login
 if (!isLoggedIn()) {
-    header("Location: login.php");
+    header("Location: login");
     exit();
 }
 
 // If logged in but not admin, redirect appropriately
 if (!isAdmin()) {
     if (isCustomer()) {
-        header("Location: ../customers/dashboard.php");
+        header("Location: ../customers/dashboard");
     } else {
-        header("Location: ../index.php");
+        header("Location: ../index");
     }
     exit();
 }
@@ -158,7 +158,7 @@ try {
                 <span class="navbar-text me-3 welcome-text">
                     <i class="fas fa-user me-1"></i>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!
                 </span>
-                <a class="nav-link" href="../logout.php">
+                <a class="nav-link" href="../logout">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
             </div>
@@ -237,7 +237,7 @@ try {
                         </div>
                         <h4>Manage Customers</h4>
                         <p>Add, edit, or remove customer accounts</p>
-                        <a href="manage_customers.php" class="function-btn btn btn-primary">
+                        <a href="manage_customers" class="function-btn btn btn-primary">
                             <i class="fas fa-user-plus me-1"></i>Manage Now
                         </a>
                     </div>
@@ -249,7 +249,7 @@ try {
                         </div>
                         <h4>View OTP Requests</h4>
                         <p>Monitor all OTP generation requests</p>
-                        <a href="view_otp_requests.php" class="function-btn btn btn-success">
+                        <a href="view_otp_requests" class="function-btn btn btn-success">
                             <i class="fas fa-eye me-1"></i>View Requests
                         </a>
                     </div>
@@ -261,7 +261,7 @@ try {
                         </div>
                         <h4>Message Templates</h4>
                         <p>Configure OTP message templates</p>
-                        <a href="view_message_templates.php" class="function-btn btn btn-warning text-dark">
+                        <a href="view_message_templates" class="function-btn btn btn-warning text-dark">
                             <i class="fas fa-edit me-1"></i>Configure
                         </a>
                     </div>
@@ -273,7 +273,7 @@ try {
                         </div>
                         <h4>Manage Quotas</h4>
                         <p>Set and manage customer OTP quotas</p>
-                        <a href="manage_quotas.php" class="function-btn btn btn-danger">
+                        <a href="manage_quotas" class="function-btn btn btn-danger">
                             <i class="fas fa-sliders-h me-1"></i>Manage
                         </a>
                     </div>
@@ -285,7 +285,7 @@ try {
                         </div>
                         <h4>Manage Maskings</h4>
                         <p>Create and assign maskings to customers</p>
-                        <a href="manage_maskings.php" class="function-btn btn btn-info">
+                        <a href="manage_maskings" class="function-btn btn btn-info">
                             <i class="fas fa-cog me-1"></i>Manage
                         </a>
                     </div>

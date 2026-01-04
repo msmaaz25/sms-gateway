@@ -19,9 +19,9 @@ if (!isLoggedIn() || !isCustomer()) {
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="../index.php">OTP Service</a>
+            <a class="navbar-brand" href="../index">OTP Service</a>
             <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="../login.php">Login</a>
+                <a class="nav-link" href="../login">Login</a>
             </div>
         </div>
     </nav>

@@ -13,9 +13,9 @@ require_once __DIR__ . '/includes/db_setup.php';
 // If already logged in, redirect to appropriate dashboard
 if (isLoggedIn()) {
     if (isAdmin()) {
-        header("Location: admin/dashboard.php");
+        header("Location: admin/dashboard");
     } else {
-        header("Location: customers/dashboard.php");
+        header("Location: customers/dashboard");
     }
     exit();
 }
@@ -135,9 +135,9 @@ if (isLoggedIn()) {
                                 $login_result = Auth::login($username, $password);
                                 if ($login_result['success']) {
                                     if ($login_result['user_type'] === 'admin') {
-                                        header("Location: admin/dashboard.php");
+                                        header("Location: admin/dashboard");
                                     } else {
-                                        header("Location: customers/dashboard.php");
+                                        header("Location: customers/dashboard");
                                     }
                                     exit();
                                 } else {
@@ -165,7 +165,7 @@ if (isLoggedIn()) {
 
                         <!-- Mobile login link -->
                         <div class="d-lg-none mt-4 text-center">
-                            <a href="login.php" class="btn btn-outline-primary">Login</a>
+                            <a href="login" class="btn btn-outline-primary">Login</a>
                         </div>
                     </div>
                 </div>
