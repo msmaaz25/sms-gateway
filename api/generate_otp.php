@@ -50,6 +50,16 @@ if (!$user) {
     exit;
 }
 
+// Check quota immediately after API key validation
+if ($userModel->hasExceededQuota($user['id'])) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => 'OTP quota exceeded for this month'
+    ]);
+    exit;
+}
+
 // Get request data
 $input = json_decode(file_get_contents('php://input'), true);
 
@@ -102,16 +112,6 @@ if ($otp_code !== null) {
     $otp_code = str_pad(rand(0, 99999), 5, "0", STR_PAD_LEFT);
 }
 
-// Validate message if provided
-if ($message !== null) {
-    // Check if message contains OTP code (4-5 digits)
-    if (!preg_match('/\b\d{4,5}\b/', $message)) {
-        http_response_code(400);
-        echo json_encode(['error' => 'This API is only for OTP verification. Misuse will lead to permanent blocking of your access']);
-        exit;
-    }
-}
-
 // Validate mask if provided
 $maskingModel = new Masking();
 if ($mask !== null) {
@@ -148,19 +148,21 @@ if ($mask !== null) {
     }
 }
 
-try {
-    $otpModel = new OTP();
 
-    // Check if user has exceeded their quota
-    $userModel = new User();
-    if ($userModel->hasExceededQuota($user['id'])) {
+// Validate message if provided
+if ($message !== null) {
+    // If message contains an OTP code (4-5 digits), extract and use it
+    if (preg_match('/\b(\d{4,5})\b/', $message, $matches)) {
+        $otp_code = $matches[1];
+    } else {
         http_response_code(400);
-        echo json_encode([
-            'success' => false,
-            'message' => 'OTP quota exceeded for this month'
-        ]);
+        echo json_encode(['error' => 'This API is only for OTP verification. Misuse will lead to permanent blocking of your access']);
         exit;
     }
+}
+
+try {
+    $otpModel = new OTP();
 
     // If no message provided, use template
     if ($message === null) {
@@ -183,9 +185,9 @@ try {
     }
 
     // Use the OTP model to generate the OTP which will store the message and mask
-    $result = $otpModel->generateOTP($user['id'], $phone_number, $purpose, 10, $message, $mask);
+    $result = $otpModel->storeOTP($user['id'], $otp_code, $phone_number, $purpose, 10, $message, $mask);
 
-    if($result['success']) {
+    if($result) {
         // Send SMS using the message and mask
         $sms_sent = sendSMS($phone_number, $message, $mask);
 

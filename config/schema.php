@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS otp_requests (
 
 CREATE TABLE IF NOT EXISTS maskings (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    masking_code VARCHAR(50) UNIQUE NOT NULL,
+    masking_code VARCHAR(20) UNIQUE NOT NULL,
     user_id INT NULL,
     is_default TINYINT(1) DEFAULT 0,
     is_active TINYINT(1) DEFAULT 1,

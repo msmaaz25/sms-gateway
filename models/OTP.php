@@ -18,36 +18,14 @@ if (!class_exists('OTP')) {
         }
 
         // Generate a new OTP with message template
-        public function generateOTP($user_id, $phone_number, $purpose = null, $expiry_minutes = 10, $message = null, $mask = null) {
+        public function storeOTP($user_id, $otp_code, $phone_number, $purpose = null, $expiry_minutes = 10, $message = null, $mask = null) {
             try {
                 // Check if user has exceeded their quota
                 require_once __DIR__ . '/User.php';
                 $userModel = new User();
 
-                if ($userModel->hasExceededQuota($user_id)) {
-                    return [
-                        'success' => false,
-                        'message' => 'OTP quota exceeded for this month'
-                    ];
-                }
-
-                // Generate 6-digit OTP
-                $otp_code = str_pad(rand(0, 999999), 6, "0", STR_PAD_LEFT);
-
                 // Calculate expiry time
                 $expires_at = date("Y-m-d H:i:s", strtotime("+$expiry_minutes minutes"));
-
-                // Get message template for this user if no message provided
-                if ($message === null) {
-                    $template = $this->getOTPMessageTemplate($user_id);
-                    if ($template) {
-                        // Replace placeholder with OTP code
-                        $message = str_replace($template['placeholder'], $otp_code, $template['message_template']);
-                    } else {
-                        // Default message if no template found
-                        $message = "Your OTP code is: $otp_code";
-                    }
-                }
 
                 // Insert OTP request with message and mask
                 $query = "INSERT INTO otp_requests (user_id, phone_number, otp_code, otp_purpose, expires_at, sent_message, sent_mask) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -61,19 +39,9 @@ if (!class_exists('OTP')) {
                     // Increment user's used quota
                     $userModel->incrementUserUsedQuota($user_id);
 
-
-                    return [
-                        'success' => true,
-                        'otp_code' => $otp_code,
-                        'expires_at' => $expires_at,
-                        'message_sent' => true,
-                        'otp_request_id' => $otp_request_id
-                    ];
+                    return true;
                 } else {
-                    return [
-                        'success' => false,
-                        'message' => 'Failed to generate OTP'
-                    ];
+                    return false;
                 }
             } catch(PDOException $e) {
                 throw new Exception("Error generating OTP: " . $e->getMessage());

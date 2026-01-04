@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $message = 'Masking code is required';
                     $success = false;
                 } elseif (!$maskingModel->validateMaskingCode($masking_code)) {
-                    $message = 'Masking code must be alphanumeric and not exceed 50 characters';
+                    $message = 'Masking code must not exceed 20 characters';
                     $success = false;
                 } else {
                     try {
@@ -212,8 +212,8 @@ $users = $userModel->getAllCustomers(); // Only customers can have maskings assi
                             <div class="mb-3">
                                 <label for="masking_code" class="form-label">Masking Code</label>
                                 <input type="text" class="form-control" id="masking_code" name="masking_code"
-                                       placeholder="Enter alphanumeric masking code (e.g., MyCompany123)" required>
-                                <div class="form-text">Alphanumeric characters only, max 50 characters</div>
+                                       placeholder="Enter masking code (max 20 chars)" required>
+                                <div class="form-text">Max 20 characters</div>
                             </div>
                             <div class="mb-3 form-check">
                                 <input type="checkbox" class="form-check-input" id="is_default" name="is_default" value="1">

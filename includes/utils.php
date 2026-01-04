@@ -6,7 +6,7 @@ if (session_status() == PHP_SESSION_NONE) {
 require_once __DIR__ . '/../config/config.php';
 
 // Function to send SMS (integrated with Zong SMS API)
-function sendSMS($phone_number, $message, $mask = null) {
+function sendSMS($phone_number, $message, $mask) {
     // Get credentials from environment variables
     $loginId = getenv('ZONG_LOGIN_ID');
     $loginPassword = getenv('ZONG_LOGIN_PASSWORD');
@@ -16,10 +16,9 @@ function sendSMS($phone_number, $message, $mask = null) {
         error_log("ZONG_LOGIN_ID or ZONG_LOGIN_PASSWORD not set in environment variables");
         return false;
     }
-
+    
     // Prepare the API request
     $curl = curl_init();
-
     $postData = json_encode([
         "loginId" => $loginId,
         "loginPassword" => $loginPassword,

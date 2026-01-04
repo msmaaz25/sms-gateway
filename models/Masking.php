@@ -195,9 +195,9 @@ if (!class_exists('Masking')) {
             }
         }
 
-        // Validate masking code format (alphanumeric)
+        // Validate masking code format (alphanumeric and special characters, max 20 chars)
         public function validateMaskingCode($masking_code) {
-            return preg_match('/^[a-zA-Z0-9]+$/', $masking_code) && strlen($masking_code) <= 50;
+            return strlen($masking_code) <= 20;
         }
     }
 }
