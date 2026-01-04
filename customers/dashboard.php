@@ -399,7 +399,7 @@ $today_otp_requests = array_filter($otp_requests, function($otp) {
                                     </div>
                                     <div class="mb-2">
                                         <label class="form-label">Request Body</label>
-                                        <textarea class="form-control" id="verifyOtpBody" rows="3">{"otp_code": "123456"}</textarea>
+                                        <textarea class="form-control" id="verifyOtpBody" rows="3">{"number": "+1234567890", "otp": "123456"}</textarea>
                                     </div>
                                     <div class="d-flex justify-content-between">
                                         <button class="btn btn-success" onclick="testApi('<?php echo BASE_URL; ?>/api/verify_otp', 'POST', document.getElementById('verifyOtpBody').value, 'verifyOtpResult')">Run Test</button>

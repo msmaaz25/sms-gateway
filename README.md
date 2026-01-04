@@ -29,7 +29,7 @@ sms-gateway/
 │   └── account_settings.php # Account management
 ├── api/                   # API endpoints
 │   ├── generate_otp.php   # Generate OTP via API
-│   ├── verify_otp.php     # Verify OTP via API
+│   ├── verify_otp.php     # Verify OTP via API (requires number and otp in request body)
 │   └── index.php          # API documentation
 ├── config/                # Configuration files
 │   ├── config.php         # Main configuration
@@ -104,7 +104,8 @@ Headers:
   Authorization: Bearer YOUR_API_KEY
 Body:
   {
-    "otp_code": "123456"
+    "number": "+1234567890",
+    "otp": "123456"
   }
 ```
 

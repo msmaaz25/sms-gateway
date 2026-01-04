@@ -79,7 +79,7 @@ if (!isLoggedIn() || !isCustomer()) {
                     </div>
                     <div class="card-body">
                         <p><strong>POST</strong> <code>/api/verify_otp</code></p>
-                        <p>Verify an OTP code.</p>
+                        <p>Verify an OTP code for a specific phone number. Only verifies the latest OTP sent to the phone number from the same user.</p>
                         
                         <h6>Headers:</h6>
                         <ul>
@@ -89,7 +89,8 @@ if (!isLoggedIn() || !isCustomer()) {
                         
                         <h6>Body:</h6>
                         <pre>{
-  "otp_code": "123456"
+  "number": "+1234567890",
+  "otp": "123456"
 }</pre>
                         
                         <h6>Response:</h6>

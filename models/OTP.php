@@ -49,18 +49,20 @@ if (!class_exists('OTP')) {
         }
 
         // Verify OTP
-        public function verifyOTP($user_id, $otp_code) {
+        public function verifyOTP($user_id, $phone_number, $otp_code) {
             try {
-                $query = "SELECT * FROM otp_requests WHERE user_id = ? AND otp_code = ? AND status = 'pending' AND expires_at > NOW()";
+                // First, get the latest OTP for this user and phone number
+                $query = "SELECT * FROM otp_requests WHERE user_id = ? AND phone_number = ? AND status = 'pending' ORDER BY created_at DESC LIMIT 1";
                 $stmt = $this->conn->prepare($query);
-                $stmt->execute([$user_id, $otp_code]);
-                $otp = $stmt->fetch(PDO::FETCH_ASSOC);
+                $stmt->execute([$user_id, $phone_number]);
+                $latest_otp = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                if($otp) {
+                // Check if the provided OTP code matches the latest OTP for this user and phone number
+                if($latest_otp && $latest_otp['otp_code'] === $otp_code) {
                     // Update OTP status to verified
                     $update_query = "UPDATE otp_requests SET status = 'verified' WHERE id = ?";
                     $update_stmt = $this->conn->prepare($update_query);
-                    $update_stmt->execute([$otp['id']]);
+                    $update_stmt->execute([$latest_otp['id']]);
 
                     return [
                         'success' => true,

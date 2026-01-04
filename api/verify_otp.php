@@ -57,7 +57,14 @@ if (!$input) {
     exit;
 }
 
-$otp_code = $input['otp_code'] ?? '';
+$phone_number = $input['number'] ?? '';
+$otp_code = $input['otp'] ?? '';
+
+if (empty($phone_number)) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Phone number is required']);
+    exit;
+}
 
 if (empty($otp_code)) {
     http_response_code(400);
@@ -65,10 +72,18 @@ if (empty($otp_code)) {
     exit;
 }
 
+// Validate phone number format
+$formatted_phone_number = validatePhoneNumberFormat($phone_number);
+if ($formatted_phone_number === false) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Phone number is not valid']);
+    exit;
+}
+
 try {
     $otpModel = new OTP();
-    $result = $otpModel->verifyOTP($user['id'], $otp_code);
-    
+    $result = $otpModel->verifyOTP($user['id'], $formatted_phone_number, $otp_code);
+
     if ($result['success']) {
         echo json_encode([
             'success' => true,
@@ -87,5 +102,34 @@ try {
         'success' => false,
         'message' => 'Error verifying OTP: ' . $e->getMessage()
     ]);
+}
+
+// Function to validate phone number format according to requirements and return formatted number
+function validatePhoneNumberFormat($phone_number) {
+    // Remove any spaces or special characters except +
+    $clean_number = preg_replace('/[^0-9+]/', '', $phone_number);
+
+    // Check if it starts with +92 (should be 13 digits total) -> return as 92... (12 digits)
+    if (substr($clean_number, 0, 3) === '+92' && strlen($clean_number) === 13 && ctype_digit(substr($clean_number, 3))) {
+        return substr($clean_number, 1); // Remove the '+' sign
+    }
+
+    // Check if it starts with 92 (should be 12 digits total) -> return as is
+    if (substr($clean_number, 0, 2) === '92' && strlen($clean_number) === 12 && ctype_digit(substr($clean_number, 2))) {
+        return $clean_number;
+    }
+
+    // Check if it starts with 0 (should be 11 digits total) -> replace 0 with 92
+    if (substr($clean_number, 0, 1) === '0' && strlen($clean_number) === 11 && ctype_digit($clean_number)) {
+        return '92' . substr($clean_number, 1);
+    }
+
+    // Default case: 10 digits -> add 92 in the beginning
+    if (strlen($clean_number) === 10 && ctype_digit($clean_number)) {
+        return '92' . $clean_number;
+    }
+
+    // If none of the conditions match, return false
+    return false;
 }
 ?>
