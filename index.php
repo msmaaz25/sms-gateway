@@ -163,10 +163,6 @@ if (isLoggedIn()) {
                             <button type="submit" class="btn btn-primary w-100">Login</button>
                         </form>
 
-                        <div class="text-center mt-4">
-                            <small class="text-muted">Default admin: admin / admin123</small>
-                        </div>
-
                         <!-- Mobile login link -->
                         <div class="d-lg-none mt-4 text-center">
                             <a href="login.php" class="btn btn-outline-primary">Login</a>

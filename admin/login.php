@@ -123,10 +123,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <button type="submit" class="btn btn-primary w-100">Login as Admin</button>
                         </form>
                         
-                        <div class="text-center mt-4">
-                            <small class="text-muted">Default admin: admin / admin123</small>
-                        </div>
-                        
                         <a href="../index.php" class="back-link">← Back to Customer Portal</a>
                     </div>
                 </div>
