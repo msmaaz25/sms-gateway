@@ -20,20 +20,56 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($message_template)) {
         $message = 'Message template is required';
     } else {
-        try {
-            // Check if template already exists for this user
-            $existing = $otpModel->getOTPMessageTemplate($user_id);
-            if ($existing) {
-                // Update existing template
-                $otpModel->updateOTPMessageTemplateByUser($user_id, $message_template, $placeholder);
-                $message = 'OTP message template updated successfully';
-            } else {
-                // Create new template
-                $otpModel->createOTPMessageTemplate($user_id, $message_template, $placeholder);
-                $message = 'OTP message template created successfully';
+        // Check if message template contains either customer assigned mask or default mask
+        require_once '../models/Masking.php';
+        $maskingModel = new Masking();
+
+        // Get user's assigned maskings
+        $user_maskings = $maskingModel->getMaskingsByUser($user_id);
+
+        // Get default masking
+        $default_masking = $maskingModel->getDefaultMasking();
+
+        $mask_found = false;
+
+        // Check if any of the user's assigned masks exist in the template
+        foreach ($user_maskings as $masking) {
+            if (strpos($message_template, $masking['masking_code']) !== false) {
+                $mask_found = true;
+                break;
             }
-        } catch (Exception $e) {
-            $message = 'Error saving OTP message template: ' . $e->getMessage();
+        }
+
+        // If no user mask found, check if default mask exists in the template
+        if (!$mask_found && $default_masking) {
+            if (strpos($message_template, $default_masking['masking_code']) !== false) {
+                $mask_found = true;
+            }
+        }
+
+        if (!$mask_found) {
+            $message = 'It is mandatory to define either default mask or user defined mask in the message template';
+        } else {
+            // Check if message template contains the OTP placeholder
+            if (strpos($message_template, $placeholder) === false) {
+                $message = 'It is mandatory to define the OTP placeholder in the message template';
+            } else {
+                try {
+                    // Check if template already exists for this user
+                    $existing = $otpModel->getOTPMessageTemplate($user_id);
+                    if ($existing) {
+                        // Update existing template
+                        $otpModel->updateOTPMessageTemplateByUser($user_id, $message_template, $placeholder);
+                        $message = 'OTP message template updated successfully';
+                    } else {
+                        // Create new template
+                        $otpModel->createOTPMessageTemplate($user_id, $message_template, $placeholder);
+                        $message = 'OTP message template created successfully';
+                    }
+                } catch (Exception $e) {
+                    $message = 'Error saving OTP message template: ' . $e->getMessage();
+                }
+            }
         }
     }
 }

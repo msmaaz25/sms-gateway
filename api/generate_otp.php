@@ -151,14 +151,13 @@ if ($mask !== null) {
 
 // Validate message if provided
 if ($message !== null) {
-    // If message contains an OTP code (4-5 digits), extract and use it
-    if (preg_match('/\b(\d{4,5})\b/', $message, $matches)) {
-        $otp_code = $matches[1];
-    } else {
+    // Check if message contains an OTP code (4-6 digits), extract and use it
+    if (!preg_match('/\b(\d{4,6})\b/', $message, $matches) || strpos($message, $mask) === false) {
         http_response_code(400);
-        echo json_encode(['error' => 'This API is only for OTP verification. Misuse will lead to permanent blocking of your access']);
+        echo json_encode(['error' => 'If you want to send a customized OTP message, make sure you have defined the mask and OTP in that along with the mask against the mask key in the API']);
         exit;
     }
+    $otp_code = $matches[1];
 }
 
 try {

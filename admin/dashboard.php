@@ -243,14 +243,14 @@ try {
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card function-card bg-success text-white">
+                    <div class="card function-card bg-info text-white">
                         <div class="function-icon text-center">
-                            <i class="fas fa-list-alt"></i>
+                            <i class="fas fa-mask"></i>
                         </div>
-                        <h4>View OTP Requests</h4>
-                        <p>Monitor all OTP generation requests</p>
-                        <a href="view_otp_requests" class="function-btn btn btn-success">
-                            <i class="fas fa-eye me-1"></i>View Requests
+                        <h4>Manage Maskings</h4>
+                        <p>Create and assign maskings to customers</p>
+                        <a href="manage_maskings" class="function-btn btn btn-info">
+                            <i class="fas fa-cog me-1"></i>Manage
                         </a>
                     </div>
                 </div>
@@ -279,14 +279,14 @@ try {
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card function-card bg-info text-white">
+                    <div class="card function-card bg-success text-white">
                         <div class="function-icon text-center">
-                            <i class="fas fa-mask"></i>
+                            <i class="fas fa-list-alt"></i>
                         </div>
-                        <h4>Manage Maskings</h4>
-                        <p>Create and assign maskings to customers</p>
-                        <a href="manage_maskings" class="function-btn btn btn-info">
-                            <i class="fas fa-cog me-1"></i>Manage
+                        <h4>View OTP Requests</h4>
+                        <p>Monitor all OTP generation requests</p>
+                        <a href="view_otp_requests" class="function-btn btn btn-success">
+                            <i class="fas fa-eye me-1"></i>View Requests
                         </a>
                     </div>
                 </div>
